@@ -9,5 +9,8 @@
     <LocalDebuggerWorkingDirectory>../data</LocalDebuggerWorkingDirectory>
     <LocalDebuggerEnvironment>PATH=../data;%PATH%;</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-   </PropertyGroup>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ShowAllFiles>false</ShowAllFiles>
+  </PropertyGroup>
 </Project>

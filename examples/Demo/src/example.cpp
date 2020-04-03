@@ -1,6 +1,7 @@
 #include "oxygine-framework.h"
 
 #include "test.h"
+#include "TestBoard.h"
 #include "TestPerf.h"
 #include "TestTweens.h"
 #include "TestDrag.h"
@@ -63,6 +64,7 @@ public:
         _y = 80;
 
 
+        addButton("board", "Game Board");
         addButton("tweens", "Tweens");
         addButton("text", "Text");
         addButton("progress_bar", "Progress Bar");
@@ -120,6 +122,7 @@ public:
 
     void clicked(string id)
     {
+        if (id == "board") showTest(new BoardTest);
         if (id == "perf") showTest(new PerfTest);
         if (id == "tweens") showTest(new TweensTest);
         if (id == "drag") showTest(new DragTest);

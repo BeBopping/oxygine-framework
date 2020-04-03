@@ -5,6 +5,7 @@
     <ClCompile Include="../src/main.cpp" />
     <ClCompile Include="../src/example.cpp" />
     <ClCompile Include="../src/test.cpp" />
+    <ClCompile Include="..\src\ResCollection.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="../src/Counter.h" />
@@ -39,5 +40,18 @@
     <ClInclude Include="..\src\TestCamera.h" />
     <ClInclude Include="..\src\TestTiled.h" />
     <ClInclude Include="..\src\TestOpenGL.h" />
+    <ClInclude Include="..\src\TestBoard.h" />
+    <ClInclude Include="..\src\Piece.h" />
+    <ClInclude Include="..\src\Simulation.h" />
+    <ClInclude Include="..\src\PieceHelpers.h" />
+    <ClInclude Include="..\src\Surface.h" />
+    <ClInclude Include="..\src\ResCollection.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\data\xmls\res.xml" />
+    <Xml Include="..\data\xmls\collections.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\Plans.todo" />
   </ItemGroup>
 </Project>
