@@ -1,0 +1,55 @@
+Next Up:
+    ☐ Undo/Redo (Snapshots after every drop() in _sim)
+    ☐ Save/Load (NOTE: Might depend on OS)
+    ☐ Dev Setup
+
+Release 0:
+    IPhone/Ipad/MacOS App:
+        ☐ Name/Icon/Splash
+        ☐ App store
+        ☐ Basic OS functions
+        ☐ Developer subscription
+        ☐ LLC?
+    Mechanics:
+        Save State:
+            ☐ File system or local storage
+            ☐ save/load UI
+        Undo/Redo:
+            ☐ Large UI when triggered
+            ☐ Must click OK when done
+            ☐ Extra code to support chained states
+        Audio:
+            ☐ Framework, triggers, and data loading
+        Pieces:
+            ✔ Movement, Collision, Visuals, etc @done (3/29/2020, 9:23:22 PM)
+        Touch:
+            ☐ OS -> App
+            ☐ Zoom
+            ☐ Toggle
+            ☐ Drag/Drop
+            ☐ Piece selection
+        Collection Loading:
+            ✔ Collection/piece XML format @done (3/29/2020, 9:28:31 PM)
+            ✔ Add collection/piece @done (3/31/2020, 10:11:58 PM)
+            ☐ Unload collection/piece
+        Rendering:
+            ✔ zIndex @done (3/29/2020, 9:27:28 PM)
+            ☐ UI
+    Assets:
+        Images:
+            ☐ Free or self-supplied
+            ☐ Boards, Pieces
+            ☐ UI
+        Audio:
+            ☐ Clinks/drags/nocks/thuds
+            ☐ UI
+        Collections:
+            ☐ Chess/Checkers (ChineseCheckers/Backgammon/Dominoes)
+    Dev Setup:
+        ✔ Git history with new repo @done (4/3/2020, 1:17:06 PM)
+        ✔ Mac Mini with correct OS @done (4/2/2020, 7:06:52 PM)
+        ✔ SSH into Mac Mini @done (4/3/2020, 1:17:13 PM)
+        ☐ XCode
+        ☐ IPhone testing
+        ☐ Collision Surface rendering
+
