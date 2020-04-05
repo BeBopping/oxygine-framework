@@ -1,10 +1,13 @@
 Next Up:
+    ✔ SKip straight to the BoardGame. @done (4/4/2020, 1:41:19 PM)
+    ☐ Physical Units and Sizes
+    ☐ Panning and zooming.
+    ☐ Object properties viewer and editor
     ☐ Undo/Redo (Snapshots after every drop() in _sim)
     ☐ Save/Load (NOTE: Might depend on OS)
-    ☐ Dev Setup
 
 Release 0:
-    IPhone/Ipad/MacOS App:
+    IPhone/IPad/MacOS App:
         ☐ Name/Icon/Splash
         ☐ App store
         ☐ Basic OS functions
@@ -22,6 +25,7 @@ Release 0:
             ☐ Framework, triggers, and data loading
         Pieces:
             ✔ Movement, Collision, Visuals, etc @done (3/29/2020, 9:23:22 PM)
+            ☐ Physical units and sizes.
         Touch:
             ☐ OS -> App
             ☐ Zoom
@@ -46,10 +50,50 @@ Release 0:
         Collections:
             ☐ Chess/Checkers (ChineseCheckers/Backgammon/Dominoes)
     Dev Setup:
-        ✔ Git history with new repo @done (4/3/2020, 1:17:06 PM)
-        ✔ Mac Mini with correct OS @done (4/2/2020, 7:06:52 PM)
-        ✔ SSH into Mac Mini @done (4/3/2020, 1:17:13 PM)
-        ☐ XCode
-        ☐ IPhone testing
-        ☐ Collision Surface rendering
+        Environment:
+            ✔ Git history with new repo @done (4/3/2020, 1:17:06 PM)
+            ✔ Mac Mini with correct OS @done (4/2/2020, 7:06:52 PM)
+            ✔ SSH into Mac Mini @done (4/3/2020, 1:17:13 PM)
+            ✔ XCode @done (4/4/2020, 11:14:40 AM)
+            ✔ IPhone testing @done (4/4/2020, 11:14:43 AM)
+        Runtime:
+            ☐ Collision Surface rendering.
+            ☐ List of object properties.
+            ☐ Edit object properties using debug menu.
+
+
+
+Scratch:
+    Behavior:
+        ☐ Entire event is passed to lower actor if the actor position is locked.
+        ☐ Single drag on item.
+            ☐ -> Moves item around and then drops it.
+        ☐ Multi drag on multi items.
+            ☐ -> Moves all items around and then drops them.
+        ☐ Single drag on background.
+            ☐ -> Pans.
+        ☐ Multi drag on items and background.
+            ☐ -> Moves all items around and pans at the same time.
+            ☐ -> Panning causes the other dragged items to move even without an input event.
+        ☐ Multi drag on single item.
+            ☐ -> Center point acts like the drag point.
+            ☐ -> If actor handles zoom, also apply zoom action.
+        ☐ Multi drag on background.
+            ☐ -> Center point acts like the drag point.
+            ☐ -> Also apply zoom action.
+    Implimentation:
+        ☐ Create a new actor class?
+            ☐ Handle input events appropriately.
+            ☐ Contains the logic for being moved around, parent/child, etc.
+        ☐ Events pass to the Stage Actor and get propagated accordingly.
+        Flow:
+            ☐ Touch event comes in.
+            ☐ If new down event.
+                ☐ Find appropriate Actor.
+                ☐ Pass action to appropriate actor.
+                    ☐ Register for move and up events.
+                    ☐ Perform actions for down, move, and up events.
+                        ☐ (Detach, Lift, Drop).
+                    ☐ if new up event, unregister move and up events.
+            ☐ If new
 
