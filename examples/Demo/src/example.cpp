@@ -106,7 +106,7 @@ public:
         addButton("mtz", "MultiTouch Camera/Zoom");
         addButton("tiled", "Tiled Map Editor");
 
-        //clicked("tiled");
+        clicked("board");
     }
 
     void showTest(spActor actor)

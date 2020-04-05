@@ -38,9 +38,6 @@
 // Offset other piece position when lifting. Calculate data while traversing tree?
 // Animate positions resolutions.
 
-extern Resources resources;
-
-
 class BoardSprite : public Sprite
 {
 private:
@@ -136,6 +133,7 @@ public:
         sprite->setPriority(-32768);
 
         _content->addChild(sprite);
+        _content->setScale(2.0f);
     }
 
     ~BoardTest()
