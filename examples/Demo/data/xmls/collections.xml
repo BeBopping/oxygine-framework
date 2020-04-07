@@ -3,7 +3,7 @@
 	<set path = "./../images" />
 
     <!-- Images have default settings that can be used by collections -->
-    <atlas id ="game" format="8888">
+    <atlas id ="game" format="8888" linearFilter="false">
         <image id="background" file="wood.png"
                size_x="1000" size_y="1000" center_x="0.5" center_y="0.5"
                mass="100" friction_bottom="1.0" friction_top="0.8"
@@ -11,7 +11,7 @@
                surface_bottom_type="NONE" surface_bottom_x="1000" surface_bottom_y="1000"
                surface_top_type="RECTANGLE" surface_top_x="200000" surface_top_y="200000"
                surface_touch_type="NONE" surface_touch_x="1000" surface_touch_y="1000"/>
-        <image id="chess_board" file="chess_board.png"
+        <image id="chess_board" file="chess_board_simple.png"
                size_x="500" size_y="500" center_x="0.5" center_y="0.5"
                mass="100" friction_bottom="1.0" friction_top="0.1"
                orientation="0" orientation_total="4"
