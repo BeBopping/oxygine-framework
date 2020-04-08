@@ -155,6 +155,7 @@
     <ClInclude Include="..\src\Simulation.h" />
     <ClInclude Include="..\src\Surface.h" />
     <ClInclude Include="..\src\TestBoard.h" />
+    <ClInclude Include="..\src\TestBoard2.h" />
     <ClInclude Include="..\src\TestCamera.h" />
     <ClInclude Include="..\src\TestEdges.h" />
     <ClInclude Include="..\src\TestOpenGL.h" />

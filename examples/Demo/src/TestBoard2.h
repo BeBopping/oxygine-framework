@@ -38,25 +38,33 @@
 // Offset other piece position when lifting. Calculate data while traversing tree?
 // Animate positions resolutions.
 
-class BoardSprite : public Sprite
+class PhysicalSprite : public Sprite
 {
 private:
-    Vector2 _local;
+    Vector2 _local = {};
+    pointer_index _pointerIndex = {};
     Simulation& _sim;
     Piece& _piece;
 
 public:
-    BoardSprite(Simulation& sim, Piece& piece) : _sim(sim), _piece(piece) {}
+    PhysicalSprite(Simulation& sim, Piece& piece) : _sim(sim), _piece(piece) {}
 
     //Draggable drag;
     void onEvent(Event* ev)
     {
         TouchEvent* te = safeCast<TouchEvent*>(ev);
+
+        // Ignore secondary touches.
+        if (te->index != _pointerIndex && _pointerIndex != 0) {
+            return;
+        }
+
+        _pointerIndex = te->index;
         if (te->type == TouchEvent::TOUCH_DOWN)
         {
             _local = te->localPosition;
-            _stage->addEventListener(TouchEvent::MOVE, CLOSURE(this, &BoardSprite::onEvent));
-            _stage->addEventListener(TouchEvent::TOUCH_UP, CLOSURE(this, &BoardSprite::onEvent));
+            _stage->addEventListener(TouchEvent::MOVE, CLOSURE(this, &PhysicalSprite::onEvent));
+            _stage->addEventListener(TouchEvent::TOUCH_UP, CLOSURE(this, &PhysicalSprite::onEvent));
         }
 
         if (te->type == TouchEvent::MOVE)
@@ -70,6 +78,7 @@ public:
             Actions::drop(_sim, _piece);
 
             _stage->removeEventListeners(this);
+            _pointerIndex = 0;
         }
     }
 
@@ -98,22 +107,71 @@ public:
 
     void onAdded2Stage()
     {
-        addEventListener(TouchEvent::TOUCH_DOWN, CLOSURE(this, &BoardSprite::onEvent));
+        addEventListener(TouchEvent::TOUCH_DOWN, CLOSURE(this, &PhysicalSprite::onEvent));
     }
 
     void onRemovedFromStage()
     {
         _stage->removeEventListeners(this);
     }
+
+    bool isOn(const Vector2& localPosition, float localScale) override
+    {
+        //RectF r = getDestRect();
+        //r.expand(Vector2(_extendedIsOn, _extendedIsOn), Vector2(_extendedIsOn, _extendedIsOn));
+
+        //auto pos = (localPosition - r.getCenter()) / 1.5 + r.getCenter();
+
+        //return __super::isOn(pos, localScale);
+        return __super::isOn(localPosition, localScale);
+        //return result;
+        /*localScale = 1.2f;
+
+        RectF r = getDestRect();
+        r.expand(Vector2(_extendedIsOn, _extendedIsOn), Vector2(_extendedIsOn, _extendedIsOn));
+
+        auto pos = (localPosition - r.getCenter()) / localScale + r.getCenter();
+
+        if (!r.pointIn(pos))
+        {
+            return false;
+        }
+
+        if (_extendedIsOn)
+            return true;
+
+        const HitTestData& ad = _frame.getHitTestData();
+        if (!ad.data)
+            return true;
+
+        const int BITS = (sizeof(int32_t) * 8);
+
+        const unsigned char* buff = ad.data;
+
+        pos = pos * _frame.getResAnim()->getAppliedScale();
+        pos = pos.div(_localScale);
+        Point lp = pos.cast<Point>() / 4;
+        Rect rs(0, 0, ad.w, ad.h);
+        if (rs.pointIn(lp))
+        {
+            const int32_t* ints = reinterpret_cast<const int32_t*>(buff + lp.y * ad.pitch);
+
+            int n = lp.x / BITS;
+            int b = lp.x % BITS;
+
+            return (ints[n] >> b) & 1;
+        }
+        return false;*/
+    }
 };
 
-class BoardTest: public Test
+class BoardTest2: public Test
 {
 public:
     Resources _resources;
     Simulation _sim;
 
-    BoardTest()
+    BoardTest2()
     {
         Resources::registerResourceType(ResCollection::create, "collection");
         //Resources::registerResourceType(ResAtlas::create, "piece");
@@ -125,7 +183,7 @@ public:
 
         _sim._root = new Piece;
 
-        spSprite sprite = new BoardSprite(_sim, *_sim._root);
+        spSprite sprite = new PhysicalSprite(_sim, *_sim._root);
         ResAnim* res = _resources.getResAnim("background");
         Vector2 pos = Vector2(getScaledWidth() / 2.0f, getScaledHeight() / 2.0f);
 
@@ -136,7 +194,7 @@ public:
         //setScale(0.2f);
     }
 
-    ~BoardTest()
+    ~BoardTest2()
     {
         Helpers::traversePostOrder(_sim, *_sim._root, [](Piece& p)
         {
@@ -153,7 +211,7 @@ public:
         if (id == "addboard")
         {
             Piece* piece = new Piece;
-            spSprite sprite = new BoardSprite(_sim, *piece);
+            spSprite sprite = new PhysicalSprite(_sim, *piece);
 
             ResAnim* res = _resources.getResAnim("chess_board");
             Vector2 pos = Vector2(scalar::randFloat(0, (float)getScaledWidth()), scalar::randFloat(0, (float)getScaledHeight()));
@@ -170,7 +228,7 @@ public:
         else if (id == "addpiece")
         {
             Piece* piece = new Piece;
-            spSprite sprite = new BoardSprite(_sim, *piece);
+            spSprite sprite = new PhysicalSprite(_sim, *piece);
 
             ResAnim* res = _resources.getResAnim("chess_white_pawn");
             Vector2 pos = Vector2(scalar::randFloat(0, (float)getScaledWidth()), scalar::randFloat(0, (float)getScaledHeight()));
@@ -188,7 +246,7 @@ public:
             Simulation s;
             s._root = new Piece;
 
-            spSprite bgSprite = new BoardSprite(_sim, *s._root);
+            spSprite bgSprite = new PhysicalSprite(_sim, *s._root);
             ResAnim* bgRes = _resources.getResAnim("background");
             Vector2 pos = Vector2(getScaledWidth() / 2.0f, getScaledHeight() / 2.0f);
 
@@ -205,7 +263,7 @@ public:
             // First piece is the board.
             ResPiece* resBoard = resCollection->getPieces()[0];
             Piece* boardPiece = new Piece;
-            spSprite sprite = new BoardSprite(_sim, *boardPiece);
+            spSprite sprite = new PhysicalSprite(_sim, *boardPiece);
             ResAnim* res = _resources.getResAnim(resBoard->getAttribute("name").as_string());
             Vector2 boardPos =
                 Vector2(scalar::randFloat(0, (float)getScaledWidth()),
@@ -223,7 +281,7 @@ public:
                 if (resPiece == resBoard) continue;
 
                 Piece* piece = new Piece;
-                spSprite sprite = new BoardSprite(_sim, *piece);
+                spSprite sprite = new PhysicalSprite(_sim, *piece);
                 ResAnim* res = _resources.getResAnim(resPiece->getAttribute("name").as_string());
                 Vector2 offset =
                     Vector2(resPiece->getAttribute("pos_x").as_float(),

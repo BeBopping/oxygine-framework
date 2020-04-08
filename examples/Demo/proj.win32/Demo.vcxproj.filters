@@ -46,6 +46,7 @@
     <ClInclude Include="..\src\PieceHelpers.h" />
     <ClInclude Include="..\src\Surface.h" />
     <ClInclude Include="..\src\ResCollection.h" />
+    <ClInclude Include="..\src\TestBoard2.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\data\xmls\res.xml" />

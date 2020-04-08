@@ -209,7 +209,8 @@ namespace Actions {
         sprite.setAnchor(res.getAttribute("center_x").as_float(),
                          res.getAttribute("center_y").as_float());
         sprite.setSize(res.getAttribute("size_x").as_float(),
-                       res.getAttribute("size_y").as_float());;
+                       res.getAttribute("size_y").as_float());
+        sprite.setExtendedClickArea(10.0f);
         if (surfaceTouchType == "NONE") {
             sprite.setTouchEnabled(false);
         }

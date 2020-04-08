@@ -2,6 +2,7 @@
 
 #include "test.h"
 #include "TestBoard.h"
+#include "TestBoard2.h"
 #include "TestPerf.h"
 #include "TestTweens.h"
 #include "TestDrag.h"
@@ -64,7 +65,8 @@ public:
         _y = 80;
 
 
-        addButton("board", "Game Board");
+        addButton("board1", "Game Board");
+        addButton("board2", "Game Board 2");
         addButton("tweens", "Tweens");
         addButton("text", "Text");
         addButton("progress_bar", "Progress Bar");
@@ -106,7 +108,7 @@ public:
         addButton("mtz", "MultiTouch Camera/Zoom");
         addButton("tiled", "Tiled Map Editor");
 
-        clicked("board");
+        //clicked("board2");
     }
 
     void showTest(spActor actor)
@@ -122,7 +124,8 @@ public:
 
     void clicked(string id)
     {
-        if (id == "board") showTest(new BoardTest);
+        if (id == "board1") showTest(new BoardTest);
+        if (id == "board2") showTest(new BoardTest2);
         if (id == "perf") showTest(new PerfTest);
         if (id == "tweens") showTest(new TweensTest);
         if (id == "drag") showTest(new DragTest);
