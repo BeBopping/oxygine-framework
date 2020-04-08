@@ -29,8 +29,8 @@ void Test::init()
     sp->setAlpha(128);
     sp->setSize(150, 107);
 
-    sp->setX(getStage()->getWidth() - sp->getWidth());
-    sp->setY(getStage()->getHeight() - sp->getHeight());
+    sp->setX(getStage()->getScaledWidth() - sp->getScaledWidth());
+    sp->setY(getStage()->getScaledHeight() - sp->getScaledHeight());
 
     file::unmount(&zp);
 }
@@ -79,6 +79,7 @@ spTextField createText(const std::string& txt)
 
 spButton createButtonHelper(spButton button, const std::string& txt, EventCallback cb)
 {
+    button->setScale(2.0f);
     button->setPriority(10);
     //button->setName(id);
     button->setResAnim(DebugActor::resSystem->getResAnim("button"));
@@ -96,8 +97,9 @@ spButton createButtonHelper(spButton button, const std::string& txt, EventCallba
 Test::Test() : _color(Color::White), _txtColor(72, 61, 139, 255)
 {
     setSize(getStage()->getSize());
+    setScale(getStage()->getScale());
 
-    _x = getWidth() - 100;
+    _x = getScaledWidth() - 100;
     _y = 2;
 
     _ui = new Actor;
@@ -110,7 +112,7 @@ Test::Test() : _color(Color::White), _txtColor(72, 61, 139, 255)
     if (instance)
     {
         spButton button = createButtonHelper(new Button, "back", CLOSURE(this, &Test::_back));
-        button->setY(getHeight() - button->getHeight());
+        button->setY(getScaledHeight() - button->getScaledHeight());
         _ui->addChild(button);
     }
 
@@ -135,7 +137,7 @@ spButton Test::addButton(std::string id, std::string txt)
     button->setColor(_color);
     textColor = Color(72, 61, 139, 255);
 
-    _y += button->getHeight() + 2.0f;
+    _y += button->getScaledHeight() + 2.0f;
 
     Sprite* ptr = button.get();
     button->addEventListener(TouchEvent::OVER, [ = ](Event*)
@@ -149,10 +151,10 @@ spButton Test::addButton(std::string id, std::string txt)
         ptr->addTween(Sprite::TweenAddColor(Color(0, 0, 0, 0)), 300);
     });
 
-    if (_y + button->getHeight() >= getHeight())
+    if (_y + button->getScaledHeight() >= getScaledHeight())
     {
         _y = 5;
-        _x += button->getWidth() + 70;
+        _x += button->getScaledWidth() + 70;
     }
 
     return button;
@@ -167,12 +169,12 @@ void Test::addToggle(std::string id, const toggle* t, int num)
               arg_anchor = Vector2(0.5f, 0.0f),
               arg_pos = Vector2(_x, _y));
 
-    _y += button->getHeight() + 2.0f;
+    _y += button->getScaledHeight() + 2.0f;
 
-    if (_y + button->getHeight() >= getHeight())
+    if (_y + button->getScaledHeight() >= getScaledHeight())
     {
         _y = 0;
-        _x += button->getWidth() + 70;
+        _x += button->getScaledWidth() + 70;
     }
 }
 
@@ -246,7 +248,7 @@ void Test::notify(std::string txt, int time)
 
     sprite->addTween(tq);
     sprite->attachTo(_ui);
-    sprite->setPosition(2.0f, getHeight() - 100.0f - N * sprite->getHeight() * 1.1f);
+    sprite->setPosition(2.0f, getScaledHeight() - 100.0f - N * sprite->getScaledHeight() * 1.1f);
 
     spTextField text = createText(txt);
     text->attachTo(sprite);
