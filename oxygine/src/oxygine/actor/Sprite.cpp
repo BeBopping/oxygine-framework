@@ -85,7 +85,14 @@ namespace oxygine
         if (!Actor::isOn(localPosition, localScale))
             return false;
 
+        Vector2 pos = localPosition;
         if (_extendedIsOn)
+        {
+            RectF r = getDestRect();
+            Vector2 scale = Vector2(1.0f, 1.0f) + Vector2(_extendedIsOn, _extendedIsOn).div(r.getSize());
+
+            pos = (pos - r.getCenter()).div(scale) + r.getCenter();
+        }
             return true;
 
         const HitTestData& ad = _frame.getHitTestData();
@@ -95,7 +102,7 @@ namespace oxygine
         const int BITS = (sizeof(int32_t) * 8);
 
         const unsigned char* buff = ad.data;
-        Vector2 pos = localPosition * _frame.getResAnim()->getAppliedScale();
+        pos = pos * _frame.getResAnim()->getAppliedScale();
         pos = pos.div(_localScale);
         Point lp = pos.cast<Point>() / HIT_TEST_DOWNSCALE;
         Rect r(0, 0, ad.w, ad.h);
