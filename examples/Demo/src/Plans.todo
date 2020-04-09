@@ -63,7 +63,7 @@ Release 0:
 
 
 
-Scratch:
+Input:
     Behavior:
         ☐ Entire event is passed to lower actor if the actor position is locked.
         ☐ Single drag on item.
@@ -96,4 +96,30 @@ Scratch:
                         ☐ (Detach, Lift, Drop).
                     ☐ if new up event, unregister move and up events.
             ☐ If new
+
+Touch Size:
+    Behavior:
+        ☐ Clickable area is larger than visible object.
+        ☐ Clickable area decreases based on pieces around it.
+        ☐ Clickable area decrease based on pieces beneath it.
+
+
+A. Maximum extention in pixels. Partially already supported.
+B. Image bounds.
+C. Non-transparent pixel bounds.
+D. Pixels only.
+E. Bounds can be even smaller when there are other objects around.
+ ____________
+|            |
+|   _______  |
+|  |   XXX|| |
+|  |XXXX  || |
+|  | XXXXX|| |
+|  |_XXX__|| |
+|  |_______| |
+|____________|
+
+With no objects around. Use a buffer around the pixel-bounds.
+With only object underneath. Use above, then constrain by parent's bounds.
+With siblings. Use above, then calculate the amount of overlapping space for each object. Split the difference between two overlapping bounds by weighting by the total overlapping space.
 
