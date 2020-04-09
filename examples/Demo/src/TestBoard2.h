@@ -59,20 +59,23 @@ public:
             return;
         }
 
+        bool firstTouch = (_pointerIndex == 0);
         _pointerIndex = te->index;
-        if (te->type == TouchEvent::TOUCH_DOWN)
-        {
-            _local = te->localPosition;
-            _stage->addEventListener(TouchEvent::MOVE, CLOSURE(this, &PhysicalSprite::onEvent));
-            _stage->addEventListener(TouchEvent::TOUCH_UP, CLOSURE(this, &PhysicalSprite::onEvent));
-        }
 
-        if (te->type == TouchEvent::MOVE)
+        if (firstTouch)
+        {
+            if (te->type == TouchEvent::TOUCH_DOWN || te->type == TouchEvent::MOVE)
+            {
+                _local = te->localPosition;
+                _stage->addEventListener(TouchEvent::MOVE, CLOSURE(this, &PhysicalSprite::onEvent));
+                _stage->addEventListener(TouchEvent::TOUCH_UP, CLOSURE(this, &PhysicalSprite::onEvent));
+            }
+        }
+        else if (te->type == TouchEvent::MOVE)
         {
             move(te->localPosition);
         }
-
-        if (te->type == TouchEvent::TOUCH_UP)
+        else if (te->type == TouchEvent::TOUCH_UP)
         {
             move(te->localPosition);
             Actions::drop(_sim, _piece);
