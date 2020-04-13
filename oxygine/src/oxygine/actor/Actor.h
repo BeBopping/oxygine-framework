@@ -52,14 +52,24 @@ namespace oxygine
         virtual ~Actor();
 
         /**returns first child*/
-        spActor             getFirstChild() const {return _children._first;}
+              spActor&      getFirstChild()       {return _children._first;}
+        const spActor&      getFirstChild() const {return _children._first;}
         /**returns last child*/
-        spActor             getLastChild() const {return _children._last;}
+              spActor&      getLastChild()        {return _children._last;}
+        const spActor&      getLastChild()  const {return _children._last;}
         /**returns next sibling*/
-        spActor             getNextSibling()const {return intr_list::_next;}
+              spActor&      getNextSibling()      {return intr_list::_next;}
+        const spActor&      getNextSibling()const {return intr_list::_next;}
         /**returns previous sibling*/
-        spActor             getPrevSibling()const {return intr_list::_prev;}
+              spActor&      getPrevSibling()      {return intr_list::_prev;}
+        const spActor&      getPrevSibling()const {return intr_list::_prev;}
 
+        /**traversal includes self*/
+        template <typename F> F traversePreOrder(F func);
+        template <typename F> F traversePostOrder(F func);
+        /**traversal excludes self*/
+        template <typename F> F traverseDescendantsPreOrder(F func);
+        template <typename F> F traverseDescendantsPostOrder(F func);
 
         /**search child by name recursively, could return self*/
         Actor*              getDescendant(const std::string& name, error_policy ep = ep_show_error);
@@ -83,6 +93,7 @@ namespace oxygine
         float               getAnchorX() const {return _anchor.x;}
         float               getAnchorY() const {return _anchor.y;}
         bool                getIsAnchorInPixels() const {return (_flags & flag_anchorInPixels) != 0;}
+        Vector2             getAnchorSize() const { return getAnchor().mult(getSize()); }
         const Vector2&      getPosition() const {return _pos;}
         float               getX() const {return _pos.x;}
         float               getY() const {return _pos.y;}
@@ -269,6 +280,13 @@ namespace oxygine
         Vector2 stage2local(const Vector2& pos = Vector2(0, 0), Actor* stage = 0) const;
         Vector2 stage2local(float x, float y, Actor* stage = 0) const;
 
+        Vector2 getAnchorToParent(const Vector2& offset = Vector2(0, 0)) const;
+        Vector2 getAnchorToParentAnchor(const Vector2& offset = Vector2(0,0)) const;
+        Vector2 getAnchorToStage(const Vector2& offset = Vector2(0, 0), const Actor* root = 0) const;
+        Vector2 getParentToAnchor(const Vector2& offset = Vector2(0, 0)) const;
+        Vector2 getParentAnchorToAnchor(const Vector2& offset = Vector2(0, 0)) const;
+        Vector2 getStageToAnchor(const Vector2& offset = Vector2(0, 0), const Actor* root = 0) const;
+
         typedef Property2Args<float, Vector2, const Vector2&, Actor, &Actor::getPosition, &Actor::setPosition>  TweenPosition;
         typedef Property<float, float, Actor, &Actor::getX, &Actor::setX>                                       TweenX;
         typedef Property<float, float, Actor, &Actor::getY, &Actor::setY>                                       TweenY;
@@ -436,6 +454,121 @@ namespace oxygine
         void done(Actor&) {}
         void update(Actor&, float p, const UpdateState& us) {}
     };
+
+    /**traversal includes self*/
+    template <typename F> F Actor::traversePreOrder(F func)
+    {
+        Actor* a = this;
+
+        while (true) {
+            bool continueToChildren = func(a);
+
+            if (continueToChildren && a->getFirstChild()) {
+                a = a->getFirstChild().get();
+            }
+            else {
+                while (!a->getNextSibling()) {
+                    if (a == this) {
+                        return func;
+                    }
+
+                    a = a->getParent();
+                }
+
+                if (a == this) {
+                    return func;
+                }
+
+                a = a->getNextSibling().get();
+            }
+        }
+    }
+    template <typename F> F Actor::traversePostOrder(F func)
+    {
+        Actor* a = this;
+
+        while (true) {
+            if (a->getFirstChild()) {
+                a = a->getFirstChild().get();
+            }
+            else {
+                while (!a->getNextSibling()) {
+                    Actor* a2 = a;
+                    a = a->getParent();
+
+                    func(a2);
+
+                    if (a2 == this) {
+                        return func;
+                    }
+                }
+
+                Actor* a2 = a;
+                a = a->getNextSibling().get();
+
+                func(a2);
+
+                if (a2 == this) {
+                    return func;
+                }
+            }
+        }
+    }
+    /**traversal excludes self*/
+    template <typename F> F Actor::traverseDescendantsPreOrder(F func)
+    {
+        Actor* a = getFirstChild().get();
+
+        if (!a) return func;
+
+        while (true) {
+            bool continueToChildren = func(a);
+
+            if (continueToChildren && a->getFirstChild()) {
+                a = a->getFirstChild().get();
+            }
+            else {
+                while (!a->getNextSibling()) {
+                    a = a->getParent();
+
+                    if (a == this) {
+                        return func;
+                    }
+                }
+
+                a = a->getNextSibling().get();
+            }
+        }
+    }
+    template <typename F> F Actor::traverseDescendantsPostOrder(F func)
+    {
+        Actor* a = getFirstChild().get();
+
+        if (!a) return func;
+
+        while (true) {
+            if (a->getFirstChild()) {
+                a = a->getFirstChild().get();
+            }
+            else {
+                while (!a->getNextSibling()) {
+                    Actor* a2 = a;
+                    a = a->getParent();
+
+                    func(a2);
+
+                    if (a == this) {
+                        return func;
+                    }
+                }
+
+                Actor* a2 = a;
+                a = a->getNextSibling().get();
+
+                func(a2);
+            }
+        }
+    }
 }
 
 

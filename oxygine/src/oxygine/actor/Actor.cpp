@@ -1134,6 +1134,39 @@ namespace oxygine
         return convert_stage2local(this, Vector2(x, y), stage);
     }
 
+    Vector2 Actor::getAnchorToParent(const Vector2& offset) const
+    {
+        return getPosition() + offset + getAnchorSize();
+    }
+
+    Vector2 Actor::getAnchorToParentAnchor(const Vector2& offset) const
+    {
+        return getAnchorToParent(offset) - getParent()->getAnchorSize();
+    }
+
+    Vector2 Actor::getAnchorToStage(const Vector2& offset, const Actor* root) const
+    {
+        if (!root)
+            root = getStage().get();
+        return local2stage(offset + getAnchorSize());
+    }
+
+    Vector2 Actor::getParentToAnchor(const Vector2& offset) const
+    {
+        return offset - getPosition() - getAnchorSize();
+    }
+
+    Vector2 Actor::getParentAnchorToAnchor(const Vector2& offset) const
+    {
+        return getParentToAnchor(offset + getParent()->getAnchorSize());
+    }
+
+    Vector2 Actor::getStageToAnchor(const Vector2& offset, const Actor* root) const
+    {
+        if (!root)
+            root = getStage().get();
+        return stage2local(offset) - getAnchorSize();
+    }
 
     bool Actor::prepareRender(RenderState& rs, const RenderState& parentRS)
     {
