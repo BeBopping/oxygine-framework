@@ -20,6 +20,7 @@ public:
     static void free();
 
     static spTest instance;
+    static spTest activeInstance;
     static Resources _resources;
 
     struct toggle
@@ -37,6 +38,14 @@ public:
     virtual void clicked(string id) {}
     virtual void toggleClicked(string id, const toggle* data) {}
 
+    //      spActor& getPieces()       { return _pieces; }
+    //const spActor& getPieces() const { return _pieces; }
+    
+          spActor& getContent()       { return _content; }
+    const spActor& getContent() const { return _content; }
+    
+          spActor& getUI()       { return _ui; }
+    const spActor& getUI() const { return _ui; }
 
     void notify(string text, int time = 400);
 
@@ -50,6 +59,7 @@ protected:
     Color _txtColor;
 
     spActor _content;
+    //spActor _pieces;
     spActor _ui;
 
     float _x;

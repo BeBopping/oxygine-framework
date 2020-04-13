@@ -7,6 +7,7 @@ static const unsigned char system_data[] = { 0x50, 0x4b, 0x03, 0x04, 0x14, 0x00,
 
 Resources Test::_resources;
 spTest Test::instance;
+spTest Test::activeInstance;
 
 void Test::init()
 {
@@ -96,6 +97,8 @@ spButton createButtonHelper(spButton button, const std::string& txt, EventCallba
 
 Test::Test() : _color(Color::White), _txtColor(72, 61, 139, 255)
 {
+    activeInstance = this;
+
     setSize(getStage()->getSize());
     setScale(getStage()->getScale());
 
@@ -212,6 +215,7 @@ void Test::_toggleClicked(Event* event)
 void Test::_back(Event* event)
 {
     detach();
+    activeInstance = 0;
     instance->setVisible(true);
 }
 
