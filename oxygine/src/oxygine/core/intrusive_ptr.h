@@ -97,22 +97,22 @@ namespace oxygine
         return a.get() != b.get();
     }
 
-    template<class T> inline bool operator==(intrusive_ptr<T> const& a, T* b)
+    template<class T> inline bool operator==(intrusive_ptr<T> const& a, const T* b)
     {
         return a.get() == b;
     }
 
-    template<class T> inline bool operator!=(intrusive_ptr<T> const& a, T* b)
+    template<class T> inline bool operator!=(intrusive_ptr<T> const& a, const T* b)
     {
         return a.get() != b;
     }
 
-    template<class T> inline bool operator==(T* a, intrusive_ptr<T> const& b)
+    template<class T> inline bool operator==(const T* a, intrusive_ptr<T> const& b)
     {
         return a == b.get();
     }
 
-    template<class T> inline bool operator!=(T* a, intrusive_ptr<T> const& b)
+    template<class T> inline bool operator!=(const T* a, intrusive_ptr<T> const& b)
     {
         return a != b.get();
     }
