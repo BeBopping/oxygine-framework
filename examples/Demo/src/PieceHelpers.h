@@ -210,7 +210,7 @@ namespace Actions {
                          res.getAttribute("center_y").as_float());
         sprite.setSize(res.getAttribute("size_x").as_float(),
                        res.getAttribute("size_y").as_float());
-        sprite.setExtendedClickArea(10.0f);
+        sprite.setExtendedClickArea(10);
         if (surfaceTouchType == "NONE") {
             sprite.setTouchEnabled(false);
         }
