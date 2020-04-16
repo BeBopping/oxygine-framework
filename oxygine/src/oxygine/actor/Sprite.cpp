@@ -93,7 +93,6 @@ namespace oxygine
 
             pos = (pos - r.getCenter()).div(scale) + r.getCenter();
         }
-            return true;
 
         const HitTestData& ad = _frame.getHitTestData();
         if (!ad.data)
