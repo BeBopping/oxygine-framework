@@ -34,7 +34,7 @@ public:
                   res.getAttribute("center_y").as_float());
         setSize(res.getAttribute("size_x").as_float(),
                 res.getAttribute("size_y").as_float());
-        setExtendedClickArea(10);
+        setExtendedClickArea(30);
         if (surfaceTouchType == "NONE") {
             setTouchEnabled(false);
         }
@@ -156,53 +156,78 @@ public:
         _stage->removeEventListeners(this);
     }
 
-    bool isOn(const Vector2& localPosition, float localScale) override
+    RectF getNaiveTouchBoundsStage() const
     {
-        //RectF r = getDestRect();
-        //r.expand(Vector2(_extendedIsOn, _extendedIsOn), Vector2(_extendedIsOn, _extendedIsOn));
-
-        //auto pos = (localPosition - r.getCenter()) / 1.5 + r.getCenter();
-
-        //return __super::isOn(pos, localScale);
-        return __super::isOn(localPosition, localScale);
-        //return result;
-        /*localScale = 1.2f;
-
         RectF r = getDestRect();
         r.expand(Vector2(_extendedIsOn, _extendedIsOn), Vector2(_extendedIsOn, _extendedIsOn));
 
-        auto pos = (localPosition - r.getCenter()) / localScale + r.getCenter();
+        r.setPosition(local2stage(r.getPosition()));
 
-        if (!r.pointIn(pos))
+        return r;
+    }
+
+    RectF getTouchBoundsStage() const
+    {
+        const RectF rect = getNaiveTouchBoundsStage();
+        RectF adjustedRect = rect;
+
+        for (const Actor* siblingActor = getParent()->getFirstChild().get();
+             siblingActor;
+             siblingActor = siblingActor->getNextSibling().get())
         {
-            return false;
+            if (siblingActor == this) continue;
+
+            const PhysicalSprite* sibling = dynamic_cast<const PhysicalSprite*>(siblingActor);
+            const RectF localRect = sibling->getNaiveTouchBoundsStage();
+            RectF clip = rect;
+            clip.clip(localRect);
+
+            if (clip.getWidth() > clip.getHeight()) {
+                if (rect.getTop() < localRect.getBottom() &&
+                    rect.getBottom() > localRect.getBottom())
+                {
+                    float newTop = (rect.getTop() + localRect.getBottom()) / 2.0f;
+                    if (newTop > adjustedRect.getTop()) {
+                        adjustedRect.moveTop(newTop);
+                    }
+                }
+                else if (rect.getBottom() > localRect.getTop() &&
+                    rect.getTop() < localRect.getTop())
+                {
+                    float newBottom = (rect.getBottom() + localRect.getTop()) / 2.0f;
+                    if (newBottom < adjustedRect.getBottom()) {
+                        adjustedRect.moveBottom(newBottom);
+                    }
+                }
+            }
+            else if (clip.getWidth() < clip.getHeight()) {
+                if (rect.getLeft() < localRect.getRight() &&
+                    rect.getRight() > localRect.getRight())
+                {
+                    float newLeft = (rect.getLeft() + localRect.getRight()) / 2.0f;
+                    if (newLeft > adjustedRect.getLeft()) {
+                        adjustedRect.moveLeft(newLeft);
+                    }
+                }
+                else if (rect.getRight() > localRect.getLeft() &&
+                    rect.getLeft() < localRect.getLeft())
+                {
+                    float newRight = (rect.getRight() + localRect.getLeft()) / 2.0f;
+                    if (newRight < adjustedRect.getRight()) {
+                        adjustedRect.moveRight(newRight);
+                    }
+                }
+            }
         }
 
-        if (_extendedIsOn)
-            return true;
+        return adjustedRect;
+    }
 
-        const HitTestData& ad = _frame.getHitTestData();
-        if (!ad.data)
-            return true;
+    bool isOn(const Vector2& localPosition, float localScale) override
+    {
+        RectF r = getTouchBoundsStage();
 
-        const int BITS = (sizeof(int32_t) * 8);
-
-        const unsigned char* buff = ad.data;
-
-        pos = pos * _frame.getResAnim()->getAppliedScale();
-        pos = pos.div(_localScale);
-        Point lp = pos.cast<Point>() / 4;
-        Rect rs(0, 0, ad.w, ad.h);
-        if (rs.pointIn(lp))
-        {
-            const int32_t* ints = reinterpret_cast<const int32_t*>(buff + lp.y * ad.pitch);
-
-            int n = lp.x / BITS;
-            int b = lp.x % BITS;
-
-            return (ints[n] >> b) & 1;
-        }
-        return false;*/
+        return r.pointIn(local2stage(localPosition));
     }
 
     void detach()
@@ -398,17 +423,6 @@ public:
         sprite->setPriority(-32768);
         _content->addChild(sprite);
 
-        //auto x = getPieces();
-        //auto y = Test::instance->getContent();
-        //(x); (y);
-
-        //auto a = Test::instance->getContent();
-        //auto b = a->getFirstChild();
-        //auto c = b.get();
-        //auto d = dynamic_cast<PhysicalSprite*>(c);
-        //(d);
-        //setScale(0.2f);
-
         addEventListener(TouchEvent::MOVE, CLOSURE(this, &BoardTest2::event));
 
         spTextField tf = new TextField;
@@ -545,7 +559,7 @@ public:
 
             boardPos -= boardSize / 2.0f;
 
-            for (int i = 1; i < resCollection->getPieces().size(); ++i) {
+            for (int i = 1; i < (int)resCollection->getPieces().size(); ++i) {
                 ResPiece* resPiece = resCollection->getPieces()[i];
                 ResAnim* res = _resources.getResAnim(resPiece->getAttribute("name").as_string());
                 Vector2 offset =
