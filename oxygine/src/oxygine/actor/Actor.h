@@ -274,18 +274,11 @@ namespace oxygine
         virtual Vector2 local2parent(const Vector2& pos = Vector2(0, 0)) const;
 
         //converts local position to Stage
-        Vector2 local2stage(const Vector2& pos = Vector2(0, 0), Actor* stage = 0) const;
-        Vector2 local2stage(float x, float y, Actor* stage = 0) const;
+        Vector2 local2stage(const Vector2& pos = Vector2(0, 0), const Actor* stage = 0) const;
+        Vector2 local2stage(float x, float y, const Actor* stage = 0) const;
         //converts global position (position in Stage space) to local space
-        Vector2 stage2local(const Vector2& pos = Vector2(0, 0), Actor* stage = 0) const;
-        Vector2 stage2local(float x, float y, Actor* stage = 0) const;
-
-        Vector2 getAnchorToParent(const Vector2& offset = Vector2(0, 0)) const;
-        Vector2 getAnchorToParentAnchor(const Vector2& offset = Vector2(0,0)) const;
-        Vector2 getAnchorToStage(const Vector2& offset = Vector2(0, 0), const Actor* root = 0) const;
-        Vector2 getParentToAnchor(const Vector2& offset = Vector2(0, 0)) const;
-        Vector2 getParentAnchorToAnchor(const Vector2& offset = Vector2(0, 0)) const;
-        Vector2 getStageToAnchor(const Vector2& offset = Vector2(0, 0), const Actor* root = 0) const;
+        Vector2 stage2local(const Vector2& pos = Vector2(0, 0), const Actor* stage = 0) const;
+        Vector2 stage2local(float x, float y, const Actor* stage = 0) const;
 
         typedef Property2Args<float, Vector2, const Vector2&, Actor, &Actor::getPosition, &Actor::setPosition>  TweenPosition;
         typedef Property<float, float, Actor, &Actor::getX, &Actor::setX>                                       TweenX;
