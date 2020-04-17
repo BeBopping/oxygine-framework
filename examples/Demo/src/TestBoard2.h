@@ -555,7 +555,8 @@ public:
         if (id == "addboard")
         {
             ResAnim* res = _resources.getResAnim("chess_board");
-            Vector2 pos = Vector2(scalar::randFloat(0, (float)_content->getScaledWidth()), scalar::randFloat(0, (float)getScaledHeight()));
+            Vector2 pos = _content->stage2local(Vector2(scalar::randFloat(0, (float)getScaledWidth()),
+                                                        scalar::randFloat(0, (float)getScaledHeight())));
             spPhysicalSprite sprite = new PhysicalSprite(*res, pos);
 
             sprite->drop();
@@ -567,7 +568,8 @@ public:
         else if (id == "addpiece")
         {
             ResAnim* res = _resources.getResAnim("chess_white_pawn");
-            Vector2 pos = Vector2(scalar::randFloat(0, (float)_content->getScaledWidth()), scalar::randFloat(0, (float)getScaledHeight()));
+            Vector2 pos = _content->stage2local(Vector2(scalar::randFloat(0, (float)getScaledWidth()),
+                                                        scalar::randFloat(0, (float)getScaledHeight())));
             spPhysicalSprite sprite = new PhysicalSprite(*res, pos);
 
             sprite->drop();
@@ -596,8 +598,8 @@ public:
                 boardSize = Vector2(resBoard->getAttribute("surface_bottom_x").as_float(),
                     resBoard->getAttribute("surface_bottom_y").as_float());
                 boardPos = hugeOffset +
-                    Vector2(scalar::randFloat(boardSize.x / 2.0f, (float)_content->getScaledWidth() - boardSize.x / 2.0f),
-                        scalar::randFloat(boardSize.y / 2.0f, (float)getScaledHeight() - boardSize.y / 2.0f));
+                    _content->stage2local(Vector2(scalar::randFloat(0.0f, (float)getScaledWidth()),
+                                                  scalar::randFloat(0.0f, (float)getScaledHeight())));
                 spPhysicalSprite boardSprite = new PhysicalSprite(*resBoard, boardPos);
 
                 boardSprite->drop();
