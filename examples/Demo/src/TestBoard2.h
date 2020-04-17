@@ -66,14 +66,14 @@ public:
         //piece._surfaceImage;
         //piece._surfaceTouch;
 
-        setAnchorOnStage(pos);
+        setAnchorOnRoot(pos);
     }
 
-    void setAnchorOnStage(const Vector2& pos)
+    void setAnchorOnRoot(const Vector2& pos)
     {
-        Sprite::setPosition(getPosition() + getStageToAnchor(pos));
+        Sprite::setPosition(getPosition() + getRootToAnchor(pos));
 
-        RectF bBox = SurfaceHelpers::getBBox(_surfaceCollision, getAnchorToStage());
+        RectF bBox = SurfaceHelpers::getBBox(_surfaceCollision, getAnchorToRoot());
         short zIndex = (short)bBox.getTop();
         setPriority(zIndex); //0->32000
     }
@@ -93,8 +93,8 @@ public:
 
         _pointerIndex = te->index;
         _local = te->localPosition;
-        _stage->addEventListener(TouchEvent::MOVE, CLOSURE(this, &PhysicalSprite::onEventMove));
-        _stage->addEventListener(TouchEvent::TOUCH_UP, CLOSURE(this, &PhysicalSprite::onEventTouchUp));
+        getRoot()->addEventListener(TouchEvent::MOVE, CLOSURE(this, &PhysicalSprite::onEventMove));
+        getRoot()->addEventListener(TouchEvent::TOUCH_UP, CLOSURE(this, &PhysicalSprite::onEventTouchUp));
 
         ev->stopImmediatePropagation();
     }
@@ -115,7 +115,7 @@ public:
         move(te->localPosition);
         drop();
 
-        _stage->removeEventListeners(this);
+        getRoot()->removeEventListeners(this);
         _pointerIndex = 0;
 
         ev->stopImmediatePropagation();
@@ -123,7 +123,7 @@ public:
 
     void move(const Vector2& pos)
     {
-        Vector2 localPos = stage2local(pos);
+        Vector2 localPos = stage2local(pos, getRoot());
         Vector2 offset = localPos - _local;
 
         Transform tr = getTransform();
@@ -132,7 +132,7 @@ public:
         Vector2 p = tr.transform(offset);
         //Sprite::setPosition(getPosition() + p);
 
-        lift(getAnchorToStage(p));
+        lift(getAnchorToRoot(p));
     }
 
     void doUpdate(const UpdateState& us)
@@ -141,7 +141,7 @@ public:
         //if (!ind)
         //    return;
         //PointerState* st = Input::instance.getTouchByIndex(ind);
-        //move(_stage->parent2local(st->getPosition()));
+        //move(getRoot()->parent2local(st->getPosition()));
     }
 
     void onAdded2Stage()
@@ -153,22 +153,22 @@ public:
 
     void onRemovedFromStage()
     {
-        _stage->removeEventListeners(this);
+        getRoot()->removeEventListeners(this);
     }
 
-    RectF getNaiveTouchBoundsStage() const
+    RectF getNaiveTouchBoundsRoot() const
     {
         RectF r = getDestRect();
         r.expand(Vector2(_extendedIsOn, _extendedIsOn), Vector2(_extendedIsOn, _extendedIsOn));
 
-        r.setPosition(local2stage(r.getPosition()));
+        r.setPosition(local2stage(r.getPosition(), getRoot()));
 
         return r;
     }
 
-    RectF getTouchBoundsStage() const
+    RectF getTouchBoundsRoot() const
     {
-        const RectF rect = getNaiveTouchBoundsStage();
+        const RectF rect = getNaiveTouchBoundsRoot();
         RectF adjustedRect = rect;
 
         for (const Actor* siblingActor = getParent()->getFirstChild().get();
@@ -178,7 +178,7 @@ public:
             if (siblingActor == this) continue;
 
             const PhysicalSprite* sibling = dynamic_cast<const PhysicalSprite*>(siblingActor);
-            const RectF localRect = sibling->getNaiveTouchBoundsStage();
+            const RectF localRect = sibling->getNaiveTouchBoundsRoot();
             RectF clip = rect;
             clip.clip(localRect);
 
@@ -225,9 +225,9 @@ public:
 
     bool isOn(const Vector2& localPosition, float localScale) override
     {
-        RectF r = getTouchBoundsStage();
+        RectF r = getTouchBoundsRoot();
 
-        return r.pointIn(local2stage(localPosition));
+        return r.pointIn(local2stage(localPosition, getRoot()));
     }
 
     void detach()
@@ -236,23 +236,23 @@ public:
         // parent.
         if (!hasNullParent()) {
             spPhysicalSprite sp = this;
-            Vector2 stagePos = getAnchorToStage();
+            Vector2 rootPos = getAnchorToRoot();
             getPieces()->addChild(this);
-            setAnchorOnStage(stagePos);
+            setAnchorOnRoot(rootPos);
 
             //Actor* oldParent = Sprite::detach();
             //getPieces()->addChild(this);
         }
     }
 
-    void lift(Vector2 stagePos)
+    void lift(Vector2 rootPos)
     {
         // Detach from parent.
         //detach();
 
         // Set the current movement and the new offset.
-        setAnchorOnStage(stagePos);
-        //setAnchorOnStage(local2parent(stage2local(stagePos - getAnchor().mult(getSize()))));
+        setAnchorOnRoot(rootPos);
+        //setAnchorOnRoot(local2parent(stage2local(stagePos - getAnchor().mult(getSize()))));
 
         // Update all descendant positions.
         // traverseDescendantsPreOrder([](Actor* a)
@@ -288,9 +288,9 @@ public:
         std::vector<PhysicalSprite*> movingPieces;
 
         // Settle Piece within target.
-        if (!SurfaceHelpers::contains(target->getAnchorToStage(),
+        if (!SurfaceHelpers::contains(target->getAnchorToRoot(),
                                       target->_surfaceSupport,
-                                      getAnchorToStage(),
+                                      getAnchorToRoot(),
                                       _surfaceCollision))
         {
             //newPos += target->getSupportPos(this);
@@ -335,9 +335,9 @@ public:
         // Insert piece as the first child of target.
         {
             spPhysicalSprite sp = this;
-            Vector2 stagePos = getAnchorToStage();
+            Vector2 rootPos = getAnchorToRoot();
             target->addChild(this);
-            setAnchorOnStage(stagePos);
+            setAnchorOnRoot(rootPos);
         }
 
         // Update target mass of children.
@@ -345,13 +345,23 @@ public:
 
         // Update secondary moving pieces
         for (PhysicalSprite* p : movingPieces) {
-            p->setAnchorOnStage(getExpellPos(p));
+            p->setAnchorOnRoot(getExpellPos(p));
         }
+    }
+
+    Actor* getRoot()
+    {
+        return Test::activeInstance->getContent().get();
+    }
+
+    const Actor* getRoot() const
+    {
+        return Test::activeInstance->getContent().get();
     }
 
     PhysicalSprite* getPieces()
     {
-        return dynamic_cast<PhysicalSprite*>(Test::activeInstance->getContent()->getFirstChild().get());
+        return dynamic_cast<PhysicalSprite*>(getRoot()->getFirstChild().get());
     }
 
     Actor* getUI()
@@ -362,41 +372,76 @@ public:
     bool hasNullParent()
     {
         const Actor* parent = getParent();
-        return parent == nullptr || parent == Test::activeInstance->getContent();
+        return parent == nullptr || parent == getRoot();
     }
 
     inline bool collides(PhysicalSprite* piece)
     {
-        return SurfaceHelpers::collides(getAnchorToStage(),
+        return SurfaceHelpers::collides(getAnchorToRoot(),
                                         _surfaceCollision,
-                                        piece->getAnchorToStage(),
+                                        piece->getAnchorToRoot(),
                                         piece->_surfaceCollision);
     }
 
     inline bool canSupport(PhysicalSprite* piece)
     {
         return SurfaceHelpers::canContain(_surfaceSupport, piece->_surfaceCollision) &&
-               SurfaceHelpers::contains(getAnchorToStage(),
+               SurfaceHelpers::contains(getAnchorToRoot(),
                                         _surfaceSupport,
-                                        piece->getAnchorToStage(),
+                                        piece->getAnchorToRoot(),
                                         SurfaceHelpers::Create<SurfaceType::POINT>());
     }
 
     inline Vector2 getSupportPos(PhysicalSprite* piece)
     {
-        return SurfaceHelpers::containSurface(getAnchorToStage(),
+        return SurfaceHelpers::containSurface(getAnchorToRoot(),
                                               _surfaceSupport,
-                                              piece->getAnchorToStage(),
+                                              piece->getAnchorToRoot(),
                                               piece->_surfaceCollision);
     }
 
     inline Vector2 getExpellPos(PhysicalSprite* piece)
     {
-        return SurfaceHelpers::expellSurface(getAnchorToStage(),
+        return SurfaceHelpers::expellSurface(getAnchorToRoot(),
                                              _surfaceCollision,
-                                             piece->getAnchorToStage(),
+                                             piece->getAnchorToRoot(),
                                              piece->_surfaceCollision);
     }
+
+    Vector2 getAnchorToParent(const Vector2& offset = Vector2(0, 0)) const
+    {
+        return getPosition() + offset + getAnchorSize();
+    }
+
+    Vector2 getAnchorToParentAnchor(const Vector2& offset = Vector2(0, 0)) const
+    {
+        return getAnchorToParent(offset) - getParent()->getAnchorSize();
+    }
+
+    Vector2 getAnchorToRoot(const Vector2& offset = Vector2(0, 0), const Actor* root = nullptr) const
+    {
+        if (!root)
+            root = getRoot();
+        return local2stage(offset + getAnchorSize(), root);
+    }
+
+    Vector2 getParentToAnchor(const Vector2& offset = Vector2(0, 0)) const
+    {
+        return offset - getPosition() - getAnchorSize();
+    }
+
+    Vector2 getParentAnchorToAnchor(const Vector2& offset = Vector2(0, 0)) const
+    {
+        return getParentToAnchor(offset + getParent()->getAnchorSize());
+    }
+
+    Vector2 getRootToAnchor(const Vector2& offset = Vector2(0, 0), const Actor* root = nullptr) const
+    {
+        if (!root)
+            root = getRoot();
+        return stage2local(offset, root) - getAnchorSize();
+    }
+
 };
 
 DECLARE_SMART(Test, spTest);
@@ -412,12 +457,14 @@ public:
         //Resources::registerResourceType(ResAtlas::create, "piece");
         _resources.loadXML("xmls/collections.xml");
 
+        //_content->setScale(2.25f);
+
         addButton("addchess", "Add Chess");
         addButton("addboard", "Add Board");
         addButton("addpiece", "Add Piece");
 
         ResAnim* res = _resources.getResAnim("background");
-        Vector2 pos = Vector2(getScaledWidth() / 2.0f, getScaledHeight() / 2.0f);
+        Vector2 pos = Vector2(_content->getScaledWidth() / 2.0f, _content->getScaledHeight() / 2.0f);
         spPhysicalSprite sprite = new PhysicalSprite(*res, pos);
 
         sprite->setPriority(-32768);
@@ -433,6 +480,7 @@ public:
         tf->setY(80);
         tf->setMultiline(true);
         tf->setFont(Test::_resources.getResFont("big"));
+        tf->setTouchEnabled(false);
         txtMove = tf;
     }
 
@@ -507,7 +555,7 @@ public:
         if (id == "addboard")
         {
             ResAnim* res = _resources.getResAnim("chess_board");
-            Vector2 pos = Vector2(scalar::randFloat(0, (float)getScaledWidth()), scalar::randFloat(0, (float)getScaledHeight()));
+            Vector2 pos = Vector2(scalar::randFloat(0, (float)_content->getScaledWidth()), scalar::randFloat(0, (float)getScaledHeight()));
             spPhysicalSprite sprite = new PhysicalSprite(*res, pos);
 
             sprite->drop();
@@ -519,7 +567,7 @@ public:
         else if (id == "addpiece")
         {
             ResAnim* res = _resources.getResAnim("chess_white_pawn");
-            Vector2 pos = Vector2(scalar::randFloat(0, (float)getScaledWidth()), scalar::randFloat(0, (float)getScaledHeight()));
+            Vector2 pos = Vector2(scalar::randFloat(0, (float)_content->getScaledWidth()), scalar::randFloat(0, (float)getScaledHeight()));
             spPhysicalSprite sprite = new PhysicalSprite(*res, pos);
 
             sprite->drop();
@@ -546,10 +594,10 @@ public:
                 ResPiece* resPiece = resCollection->getPieces()[0];
                 ResAnim* resBoard = _resources.getResAnim(resPiece->getAttribute("name").as_string());
                 boardSize = Vector2(resBoard->getAttribute("surface_bottom_x").as_float(),
-                                    resBoard->getAttribute("surface_bottom_y").as_float());
+                    resBoard->getAttribute("surface_bottom_y").as_float());
                 boardPos = hugeOffset +
-                           Vector2(scalar::randFloat(boardSize.x/2.0f, (float)getScaledWidth() - boardSize.x/2.0f),
-                                   scalar::randFloat(boardSize.y/2.0f, (float)getScaledHeight() - boardSize.y/2.0f));
+                    Vector2(scalar::randFloat(boardSize.x / 2.0f, (float)_content->getScaledWidth() - boardSize.x / 2.0f),
+                        scalar::randFloat(boardSize.y / 2.0f, (float)getScaledHeight() - boardSize.y / 2.0f));
                 spPhysicalSprite boardSprite = new PhysicalSprite(*resBoard, boardPos);
 
                 boardSprite->drop();
@@ -564,9 +612,9 @@ public:
                 ResAnim* res = _resources.getResAnim(resPiece->getAttribute("name").as_string());
                 Vector2 offset =
                     Vector2(resPiece->getAttribute("pos_x").as_float(),
-                            resPiece->getAttribute("pos_y").as_float());
+                        resPiece->getAttribute("pos_y").as_float());
                 Vector2 pos = boardPos + Vector2(boardSize.x * offset.x,
-                                                 boardSize.y * offset.y);
+                    boardSize.y * offset.y);
                 spPhysicalSprite sprite = new PhysicalSprite(*res, pos);
 
                 sprite->drop();
@@ -575,7 +623,7 @@ public:
 
             for (PhysicalSprite* sprite : sprites) {
                 if (sprite->getParent() == sprite->getPieces()) {
-                    sprite->lift(sprite->getAnchorToStage() - hugeOffset);
+                    sprite->lift(sprite->getAnchorToRoot() - hugeOffset);
                     sprite->drop();
                 }
             }
@@ -583,6 +631,23 @@ public:
             char str[255];
             safe_sprintf(str, "Add Chess");
             updateText(id, str);
+        }
+    }
+
+    void doUpdate(const UpdateState& us)
+    {
+        static int counter = 0;
+        static Vector2 delta = Vector2(10.0f, 10.0f);
+        ++counter;
+
+        if (counter % 1000 == 0) {
+            delta = -delta;
+        }
+
+        if (counter % 100 == 0) {
+            //_content->setRotationDegrees(_content->getRotationDegrees() + delta.x);
+            //_content->setPosition(_content->getPosition() + delta);
+            //_content->setScale(_content->getScale().mult(delta/100.0f + Vector2(1.0f, 1.0f)));
         }
     }
 };
