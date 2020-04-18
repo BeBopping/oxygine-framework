@@ -43,6 +43,50 @@ namespace SurfaceHelpers {
     template <> Surface Create<SurfaceType::CIRCLE>(float r);
     template <> Surface Create<SurfaceType::RECTANGLE>(float x, float y);
 
+    float getWidth(Surface sur)
+    {
+        switch (sur._type) {
+            case SurfaceType::NONE: return 0.0f;
+            case SurfaceType::POINT: return 0.0f;
+            case SurfaceType::CIRCLE: return sur._a * 2.0f;;
+            case SurfaceType::RECTANGLE: return sur._a;
+            default: assert(false); return 0.0f;
+        }
+    }
+
+    float getHeight(Surface sur)
+    {
+        switch (sur._type) {
+            case SurfaceType::NONE: return 0.0f;
+            case SurfaceType::POINT: return 0.0f;
+            case SurfaceType::CIRCLE: return sur._a * 2.0f;;
+            case SurfaceType::RECTANGLE: return sur._b;
+            default: assert(false); return 0.0f;
+        }
+    }
+
+    float getLongestSection(Surface sur)
+    {
+        switch (sur._type) {
+            case SurfaceType::NONE: return 0.0f;
+            case SurfaceType::POINT: return 0.0f;
+            case SurfaceType::CIRCLE: return sur._a * 2.0f;;
+            case SurfaceType::RECTANGLE: return std::sqrt(sur._a*sur._a + sur._b*sur._b);
+            default: assert(false); return 0.0f;
+        }
+    }
+
+    float getShortestSection(Surface sur)
+    {
+        switch (sur._type) {
+            case SurfaceType::NONE: return 0.0f;
+            case SurfaceType::POINT: return 0.0f;
+            case SurfaceType::CIRCLE: return sur._a * 2.0f;;
+            case SurfaceType::RECTANGLE: return std::min(sur._a, sur._b);
+            default: assert(false); return 0.0f;
+        }
+    }
+
     bool canContain(Surface surLhs, Surface surRhs);
     template <SurfaceType::ENUM LHS, SurfaceType::ENUM RHS> bool canContain(Surface surLhs, Surface surRhs);
     template <> bool canContain<SurfaceType::NONE, SurfaceType::NONE>(Surface surLhs, Surface surRhs);
