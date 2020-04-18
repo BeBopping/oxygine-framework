@@ -103,12 +103,22 @@ public:
     {
         TouchEvent* te = safeCast<TouchEvent*>(ev);
 
+        // Ignore secondary touches.
+        if (te->index != _pointerIndex && _pointerIndex != 0) {
+            return;
+        }
+
         move(te->localPosition);
     }
 
     void onEventTouchUp(Event* ev)
     {
         TouchEvent* te = safeCast<TouchEvent*>(ev);
+
+        // Ignore secondary touches.
+        if (te->index != _pointerIndex && _pointerIndex != 0) {
+            return;
+        }
 
         move(te->localPosition);
         drop();
