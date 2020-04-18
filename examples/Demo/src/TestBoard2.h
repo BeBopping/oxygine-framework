@@ -133,18 +133,20 @@ public:
         Vector2 newLocal = stage2local(pos, getRoot());
         Vector2 offset = newLocal - _local;
 
-        // Move our current local position closer to the anchor point.
-        Vector2 deltaToAnchor = getAnchorSize() - _local;
-        float movementLength = offset.length();
-        float collisionLength = SurfaceHelpers::getLongestSection(_surfaceCollision);
-        float travelPhysical = (movementLength / collisionLength) * _distanceToAnchor;
-        float travelFractional = std::min(1.0f, travelPhysical / deltaToAnchor.length());
+        if (_surfaceSupport._type == SurfaceType::NONE) {
+            // Move our current local position closer to the anchor point.
+            Vector2 deltaToAnchor = getAnchorSize() - _local;
+            float movementLength = offset.length();
+            float collisionLength = SurfaceHelpers::getLongestSection(_surfaceCollision);
+            float travelPhysical = (movementLength / collisionLength) * _distanceToAnchor;
+            float travelFractional = std::min(1.0f, travelPhysical / deltaToAnchor.length());
 
-        // Get the amount that we move the pointer towards the anchor.
-        // Remove that amount from the offset, and re-adjust our _local by that amount.
-        Vector2 pointerMovementToAnchor = deltaToAnchor * travelFractional;
-        offset -= pointerMovementToAnchor;
-        _local += pointerMovementToAnchor;
+            // Get the amount that we move the pointer towards the anchor.
+            // Remove that amount from the offset, and re-adjust our _local by that amount.
+            Vector2 pointerMovementToAnchor = deltaToAnchor * travelFractional;
+            offset -= pointerMovementToAnchor;
+            _local += pointerMovementToAnchor;
+        }
 
         Transform tr = getTransform(); tr.x = 0; tr.y = 0;
         Vector2 p = tr.transform(offset);
