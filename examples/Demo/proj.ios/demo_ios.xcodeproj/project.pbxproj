@@ -79,6 +79,7 @@
 
 /* Begin PBXFileReference section */
 		01AAF6B516BCFD9887A9D77D /* TestSliding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestSliding.h; path = ../src/TestSliding.h; sourceTree = "<group>"; };
+		0470A5E8244948AC0070A0A9 /* TestBoard2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestBoard2.h; path = ../src/TestBoard2.h; sourceTree = "<group>"; };
 		047F6BD19F885FF186A1447C /* TestCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestCounter.h; path = ../src/TestCounter.h; sourceTree = "<group>"; };
 		048AD0AD197D24AB001963EF /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		04998CEC17F8A933003441C3 /* Demo_ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo_ios.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -253,6 +254,7 @@
 		04998D4417F8A9ED003441C3 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				0470A5E8244948AC0070A0A9 /* TestBoard2.h */,
 				04D2A0C42437D19B0036E92E /* Piece.h */,
 				04D2A0BE2437D19A0036E92E /* PieceHelpers.h */,
 				04D2A0C22437D19B0036E92E /* Plans.todo */,
