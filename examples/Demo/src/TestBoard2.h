@@ -12,6 +12,7 @@ class PhysicalSprite : public Sprite
 {
 private:
     Vector2 _local = {};
+    float _distanceToAnchor = {};
     pointer_index _pointerIndex = {};
     int _orientation = {};
     int _orientationTotal = 1;
@@ -93,10 +94,9 @@ public:
 
         _pointerIndex = te->index;
         _local = te->localPosition;
+        _distanceToAnchor = (getAnchorSize() - _local).length();
         getRoot()->addEventListener(TouchEvent::MOVE, CLOSURE(this, &PhysicalSprite::onEventMove));
         getRoot()->addEventListener(TouchEvent::TOUCH_UP, CLOSURE(this, &PhysicalSprite::onEventTouchUp));
-
-        ev->stopImmediatePropagation();
     }
 
     void onEventMove(Event* ev)
@@ -104,8 +104,6 @@ public:
         TouchEvent* te = safeCast<TouchEvent*>(ev);
 
         move(te->localPosition);
-
-        ev->stopImmediatePropagation();
     }
 
     void onEventTouchUp(Event* ev)
@@ -117,20 +115,29 @@ public:
 
         getRoot()->removeEventListeners(this);
         _pointerIndex = 0;
-
-        ev->stopImmediatePropagation();
     }
 
     void move(const Vector2& pos)
     {
-        Vector2 localPos = stage2local(pos, getRoot());
-        Vector2 offset = localPos - _local;
+        // Get new local position and the offset from last.
+        Vector2 newLocal = stage2local(pos, getRoot());
+        Vector2 offset = newLocal - _local;
 
-        Transform tr = getTransform();
-        tr.x = 0;
-        tr.y = 0;
+        // Move our current local position closer to the anchor point.
+        Vector2 deltaToAnchor = getAnchorSize() - _local;
+        float movementLength = offset.length();
+        float collisionLength = SurfaceHelpers::getLongestSection(_surfaceCollision);
+        float travelPhysical = (movementLength / collisionLength) * _distanceToAnchor;
+        float travelFractional = std::min(1.0f, travelPhysical / deltaToAnchor.length());
+
+        // Get the amount that we move the pointer towards the anchor.
+        // Remove that amount from the offset, and re-adjust our _local by that amount.
+        Vector2 pointerMovementToAnchor = deltaToAnchor * travelFractional;
+        offset -= pointerMovementToAnchor;
+        _local += pointerMovementToAnchor;
+
+        Transform tr = getTransform(); tr.x = 0; tr.y = 0;
         Vector2 p = tr.transform(offset);
-        //Sprite::setPosition(getPosition() + p);
 
         lift(getAnchorToRoot(p));
     }
