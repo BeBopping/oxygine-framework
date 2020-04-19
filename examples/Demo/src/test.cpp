@@ -106,7 +106,7 @@ Test::Test() : _color(Color::White), _txtColor(72, 61, 139, 255)
     _y = 2;
 
     _ui = new Actor;
-    _content = new Actor;
+    _content = new Root;
     _content->setSize(getSize());
 
     addChild(_content);

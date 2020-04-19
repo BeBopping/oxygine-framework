@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Root.h"
 #include "oxygine-framework.h"
 
 using namespace oxygine;
@@ -41,8 +42,8 @@ public:
     //      spActor& getPieces()       { return _pieces; }
     //const spActor& getPieces() const { return _pieces; }
     
-          spActor& getContent()       { return _content; }
-    const spActor& getContent() const { return _content; }
+          spRoot& getContent()       { return _content; }
+    const spRoot& getContent() const { return _content; }
     
           spActor& getUI()       { return _ui; }
     const spActor& getUI() const { return _ui; }
@@ -58,7 +59,7 @@ protected:
     Color _color;
     Color _txtColor;
 
-    spActor _content;
+    spRoot _content;
     //spActor _pieces;
     spActor _ui;
 

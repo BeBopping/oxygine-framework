@@ -152,6 +152,7 @@
     <ClInclude Include="..\src\ResCollection.h" />
     <ClInclude Include="..\src\Piece.h" />
     <ClInclude Include="..\src\PieceHelpers.h" />
+    <ClInclude Include="..\src\Root.h" />
     <ClInclude Include="..\src\Simulation.h" />
     <ClInclude Include="..\src\Surface.h" />
     <ClInclude Include="..\src\TestBoard.h" />
