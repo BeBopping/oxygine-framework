@@ -122,6 +122,9 @@ namespace oxygine
         T getRight() const {return pos.x + size.x;}
         T getBottom() const {return pos.y + size.y;}
 
+        T getWidestLength() const { return size.length(); }
+        T getNarrowestLength() const { return std::min(size.x, size.y); }
+
         void set(T x, T y, T w, T h) {pos.x = x; pos.y = y; size.x = w; size.y = h;}
         void setPosition(const point2& pos_) {pos = pos_;}
         void setPosition(T x, T y) {pos.x = x; pos.y = y;}
