@@ -62,8 +62,10 @@ public:
 
         _stageTouchPoints.erase(it);
 
-        removeEventListener(TouchEvent::MOVE, CLOSURE(this, &Root::onEventMove));
-        removeEventListener(TouchEvent::TOUCH_UP, CLOSURE(this, &Root::onEventTouchUp));
+        if (_stageTouchPoints.empty()) {
+            removeEventListener(TouchEvent::MOVE, CLOSURE(this, &Root::onEventMove));
+            removeEventListener(TouchEvent::TOUCH_UP, CLOSURE(this, &Root::onEventTouchUp));
+        }
     }
 
     void doUpdate(const UpdateState& us)
@@ -99,8 +101,13 @@ public:
         setPosition(getPosition() + p);
 
         // Scale
-        Vector2 newScale = nextBounds.getSize() - prevBounds.getSize();
-        setScale(getScale().mult(Vector2(1.0f, 1.0f) + newScale));
+        // delta / stage
+        float prevDiagonal = prevBounds.getWidestLength();
+        float nextDiagonal = nextBounds.getWidestLength();
+        if (prevDiagonal > 0.0001) {
+            //setAnchor(stage2local(nextCenter).div(getScaledSize()));
+            setScale(getScale() * (nextDiagonal / prevDiagonal));
+        }
     }
 
     void onAdded2Stage()
