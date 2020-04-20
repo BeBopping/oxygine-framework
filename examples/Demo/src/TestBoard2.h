@@ -74,8 +74,8 @@ public:
     {
         Sprite::setPosition(getPosition() + getRootToAnchor(pos));
 
-        RectF bBox = SurfaceHelpers::getBBox(_surfaceCollision, getAnchorToRoot());
-        short zIndex = (short)bBox.getTop();
+        RectF bBox = SurfaceHelpers::getBBox(_surfaceCollision, getAnchor());
+        short zIndex = (short)local2parent(bBox.getPosition()).y;
         setPriority(zIndex); //0->32000
     }
 
