@@ -105,7 +105,9 @@ public:
 
     void onAdded2Stage()
     {
-        addEventListener(TouchEvent::TOUCH_DOWN, CLOSURE(this, &Root::onEventTouchDown));
+        if (!hasEventListeners(TouchEvent::TOUCH_DOWN, CLOSURE(this, &Root::onEventTouchDown))) {
+            addEventListener(TouchEvent::TOUCH_DOWN, CLOSURE(this, &Root::onEventTouchDown));
+        }
     }
 
     void onRemovedFromStage()

@@ -165,14 +165,14 @@ public:
 
     void onAdded2Stage()
     {
-        if (getTouchEnabled()) {
+        if (getTouchEnabled() && !hasEventListeners(TouchEvent::TOUCH_DOWN, CLOSURE(this, &PhysicalSprite::onEventTouchDown))) {
             addEventListener(TouchEvent::TOUCH_DOWN, CLOSURE(this, &PhysicalSprite::onEventTouchDown));
         }
     }
 
     void onRemovedFromStage()
     {
-        getRoot()->removeEventListeners(this);
+        removeEventListener(TouchEvent::TOUCH_DOWN, CLOSURE(this, &PhysicalSprite::onEventTouchDown));
     }
 
     RectF getNaiveTouchBoundsRoot() const
@@ -505,6 +505,7 @@ public:
 
     ~BoardTest2()
     {
+        removeEventListener(TouchEvent::MOVE, CLOSURE(this, &BoardTest2::event));
         //Helpers::traversePostOrder(_sim, *_sim._root, [](Piece& p)
         //{
         //    delete &p;
